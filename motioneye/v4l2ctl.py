@@ -58,14 +58,12 @@ def list_devices():
         fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
         while True:
-            try:
-                data = p.stdout.read(1024)
-                if not data:
-                    break
-
-            except IOError:
-                data = ''
+            data = p.stdout.read(1024)
+            if data == b'':
+                break
+            if not data:
                 time.sleep(0.01)
+                continue
 
             output += data
 
@@ -90,6 +88,7 @@ def list_devices():
 
     name = None
     devices = []
+    output = str(output, 'utf-8')
     for line in output.split('\n'):
         if line.startswith('\t'):
             device = line.strip()
